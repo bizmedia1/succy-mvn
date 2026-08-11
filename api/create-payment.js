@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -21,10 +22,12 @@ export default async function handler(req, res) {
       "https://mevonpay.com.ng/V1/createtempva",
       {
         method: "POST",
+
         headers: {
           Authorization: process.env.MEVON_SECRET_KEY,
           "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
           fname: firstName,
           lname: lastName
@@ -34,35 +37,11 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
-    let parsed;
-
-    try {
-
-      const result = JSON.parse(text);
-
-      parsed = result.raw
-        ? JSON.parse(result.raw)
-        : result;
-
-    } catch {
-
-      return res.status(500).json({
-        error: text
-      });
-
-    }
-
     return res.status(200).json({
 
-      account_number: parsed.account_number,
+      mevon_status: response.status,
 
-      account_name: parsed.account_name,
-
-      bank_name: parsed.bank_name,
-
-      amount: 10500,
-
-      reference: parsed.reference
+      mevon_response: text
 
     });
 
