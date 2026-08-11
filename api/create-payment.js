@@ -36,14 +36,23 @@ export default async function handler(req, res) {
     );
 
     const text = await response.text();
+const text = await response.text();
 
-    return res.status(200).json({
+const parsed = JSON.parse(text);
 
-      mevon_status: response.status,
+return res.status(200).json({
 
-      mevon_response: text
+  account_number: parsed.account_number || "",
 
-    });
+  account_name: parsed.account_name || "SCL",
+
+  bank_name: parsed.bank_name || "",
+
+  amount: 15000,
+
+  reference: parsed.reference || ""
+
+});
 
   } catch (err) {
 
