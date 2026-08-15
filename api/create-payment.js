@@ -10,66 +10,67 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Method Not Allowed"
+      success: false,
+      message: "Method not allowed"
     });
   }
 
   try {
 
-    const { firstName, lastName } = req.body || {};
+    const {
+      firstName,
+      lastName
+    } = req.body;
+
+    const bvn = process.env.REGISTRATION_NUMBER;
 
     const response = await fetch(
       "https://mevonpay.com.ng/V1/createtempva",
       {
         method: "POST",
-
         headers: {
           Authorization: process.env.MEVON_SECRET_KEY,
           "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
-          fname: firstName || "",
-          lname: lastName || ""
+
+          type: "rubies",
+
+          fname: firstName,
+
+          lname: lastName,
+
+          registration_number: bvn
+
         })
       }
     );
 
     const text = await response.text();
 
-    let parsed = {};
+    let data;
 
     try {
-      parsed = JSON.parse(text);
-    } catch (e) {
+
+      data = JSON.parse(text.trim());
+
+    } catch {
+
       return res.status(500).json({
-        error: "Invalid response from Mevon",
-        raw: text
+        success: false,
+        message: "Non JSON response",
+        response: text
       });
+
     }
 
-    return res.status(200).json({
-
-      account_number:
-        parsed.account_number || "",
-
-      account_name:
-        parsed.account_name || "SCL",
-
-      bank_name:
-        parsed.bank_name || "",
-
-      amount: 15000,
-
-      reference:
-        parsed.reference || ""
-
-    });
+    return res.status(response.ok ? 200 : 400).json(data);
 
   } catch (err) {
 
     return res.status(500).json({
-      error: err.message
+      success: false,
+      message: err.message
     });
 
   }
