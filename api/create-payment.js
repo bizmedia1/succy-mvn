@@ -1,4 +1,3 @@
-import { SUPABASE_URL, SUPABASE_KEY } from "./store";
 export default async function handler(req, res) {
 
   res.setHeader("Access-Control-Allow-Origin", "*");
